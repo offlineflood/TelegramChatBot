@@ -12,16 +12,56 @@ OWNER_ID = config["OWNER_ID"]
 
 # Botların konfiqurasiyası
 RANDOM_MESSAGES = [
-    "Əla fikir!",
-    "Tam razıyam!",
-    "Görəsən sonra nə olacaq?",
-    "Səni eşidirəm.",
-    "Bu maraqlı oldu!",
-    "Bunu qeyd edək!",
-    "Gülməli cavab :D",
-    "Nə düşündüyünü bilmirəm 😄",
-    "Fikrimcə, bu doğrudur.",
-    "Botlar da danışa bilər, bax!"
+    "Əla dedin! 👏",
+    "Bunu gözləmirdim 😲",
+    "Razıyam səninlə 👍",
+    "Görəsən necə olacaq? 🤔",
+    "Bu, məni güldürdü 😂",
+    "Çox maraqlı fikirdir 🧐",
+    "Bir az daha izah edə bilərsən? 🤓",
+    "Səninlə tam razıyam! ✅",
+    "Nə gözəl fikirdir! 🌟",
+    "Ohaaa 😮",
+    "Bunu paylaşmaq lazımdır 📣",
+    "Yaxşı zarafat idi 😄",
+    "Bir az düşündürücü oldu 🤯",
+    "Superrr! 🔥",
+    "Niyə belə düşünürsən? 🤨",
+    "Səni başa düşürəm 😊",
+    "Bir daha deyə bilərsən? 🙃",
+    "Aynen öyle! 😎",
+    "Bu fikri çox bəyəndim ❤️",
+    "İnanılmaz səslənir 😍",
+    "Ooo, maraqlı yanaşmadır! 😯",
+    "Bu barədə heç fikirləşməmişdim 🤷‍♂️",
+    "Davam elə! 💪",
+    "Çox güldüm buna 🤣",
+    "Açıq danış, utanma 😅",
+    "Bəlkə başqa cür baxaq? 🔄",
+    "Nə qədər maraqlı mövzudur! 🧠",
+    "Ətraflı danışsan yaxşı olar 📚",
+    "Sənin fikrini maraqla dinləyirəm 👂",
+    "Bu lap film kimidir 🎬",
+    "Tam sənlik mövzudur 😏",
+    "Xatırlat da sonra 📝",
+    "Həqiqətən də təsiredici idi 👌",
+    "Bir az qarışıq oldu 😕",
+    "Bunu mütləq qeyd etməliyik! 📌",
+    "Məncə də belədir! 💯",
+    "Xeyli maraq oyatdı məndə 😃",
+    "Yenə danış, maraqlıdır 🗣️",
+    "Səncə doğrudurmu? 🤷",
+    "Növbəti dəfə daha çox danışaq 🕒",
+    "Gözlənilməz idi bu 😁",
+    "Hə, bu yaxşıdır 😌",
+    "Olar, niyə də yox? 🙌",
+    "Çox yerində fikir idi 🔍",
+    "Bunu dostlara da deyəcəyəm 👫",
+    "Əla məqam idi! 🎯",
+    "Bunu yazacam yadımda qalsın ✍️",
+    "Gözümün qabağında canlandı bu 😅",
+    "Ətraflı danışsaq daha yaxşı olar 📖",
+    "Çox düşündüm bu barədə 💭"
 ]
 
 # Botların göndərəcəyi təsadüfi sticker URL-ləri
@@ -75,7 +115,7 @@ def create_bots():
 # Botların yaradılması tamamlandıqdan sonra botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)        
 def register_handlers():
-    @bots[0].on_message(filters.command("basla"))
+    @bots[0].on_message(filters.command("start") & filters.group)
     async def start_command(client: Client, message: Message):
         global target_group_id, chat_running
 
@@ -92,7 +132,7 @@ def register_handlers():
         chat_running = True
         await message.reply("✅ Botlar işə düşdü.")
 
-    @bots[0].on_message(filters.command("dayan"))
+    @bots[0].on_message(filters.command("stop") & filters.group)
     async def stop_command(client: Client, message: Message):
         global chat_running
 
