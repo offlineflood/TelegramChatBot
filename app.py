@@ -120,13 +120,16 @@ async def create_bots():
             wait_time = e.value
             print(f"❌ FloodWait ({wait_time} saniyə) - {cfg['SESSION_NAME']}")
             time.sleep(wait_time)  # Wait for the specified time
-            await bot.start()  # Retry starting the bot after the wait
+            await bot.start()  # Retry after the wait time
             bots.append(bot)
             print(f"✅ Bot başladı after FloodWait: {cfg['SESSION_NAME']}")
         except RPCError as e:
             print(f"❌ Pyrogram xəta: {e} - {cfg['SESSION_NAME']}")
         except Exception as e:
             print(f"❌ Digər xəta: {e} - {cfg['SESSION_NAME']}")
+
+        # Add a small delay between each bot to prevent rate limiting
+        await asyncio.sleep(2)  # Add delay between bot starts
 
 # Botların yaradılması tamamlandıqdan sonra botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)        
