@@ -240,7 +240,7 @@ async def main():
         
     register_handlers()
 
-    # await asyncio.gather(*(bot.start() for bot in bots))
+    await asyncio.gather(*(bot.start() for bot in bots))
     print("Botlar işə düşdü!")
     await asyncio.sleep(5)
 
