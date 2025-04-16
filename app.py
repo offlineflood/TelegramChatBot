@@ -6,7 +6,9 @@ from pyrogram.types import Message
 from config import config
 import asyncio
 import random
+import time
 import os
+
 
 # Telegram API credentials
 OWNER_ID = config["OWNER_ID"]
@@ -111,11 +113,16 @@ async def create_bots():
             bot_token=cfg["BOT_TOKEN"]
         )
         try:
-            await bot.start()
+            await bot.start()  # Try to start the bot
             bots.append(bot)
             print(f"✅ Bot başladı: {cfg['SESSION_NAME']}")
         except FloodWait as e:
-            print(f"❌ FloodWait ({e.value} saniyə) - {cfg['SESSION_NAME']}")
+            wait_time = e.value
+            print(f"❌ FloodWait ({wait_time} saniyə) - {cfg['SESSION_NAME']}")
+            time.sleep(wait_time)  # Wait for the specified time
+            await bot.start()  # Retry starting the bot after the wait
+            bots.append(bot)
+            print(f"✅ Bot başladı after FloodWait: {cfg['SESSION_NAME']}")
         except RPCError as e:
             print(f"❌ Pyrogram xəta: {e} - {cfg['SESSION_NAME']}")
         except Exception as e:
