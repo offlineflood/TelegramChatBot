@@ -233,14 +233,15 @@ async def media_loop():
 # Botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)
 async def main():
-    create_bots()
+    await create_bots() # 🔧 async function-u await ilə çağır
+    
     if not bots:
         print("❌ Heç bir bot işə başlamadı. Çıxılır.")
         return  # Don't crash, just exit
         
     register_handlers()
 
-    await asyncio.gather(*(bot.start() for bot in bots))
+    # await asyncio.gather(*(bot.start() for bot in bots))
     print("Botlar işə düşdü!")
     await asyncio.sleep(5)
 
