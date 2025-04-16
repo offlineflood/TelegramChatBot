@@ -103,8 +103,8 @@ async def create_bots():
     log_dir = "log"
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-        
-    for cfg in config["BOTS"]:
+
+    for idx, cfg in enumerate(config["BOTS"]):
         session_path = os.path.join(log_dir, cfg["SESSION_NAME"])
         bot = Client(
             session_path,
@@ -112,24 +112,59 @@ async def create_bots():
             api_hash=cfg["API_HASH"],
             bot_token=cfg["BOT_TOKEN"]
         )
+        
         try:
             await bot.start()  # Try to start the bot
             bots.append(bot)
             print(f"✅ Bot başladı: {cfg['SESSION_NAME']}")
+
         except FloodWait as e:
             wait_time = e.value
             print(f"❌ FloodWait ({wait_time} saniyə) - {cfg['SESSION_NAME']}")
-            time.sleep(wait_time)  # Wait for the specified time
-            await bot.start()  # Retry after the wait time
+            await asyncio.sleep(wait_time)  # Wait for the required time before retrying
+            await bot.start()  # Retry after waiting for the specified time
             bots.append(bot)
             print(f"✅ Bot başladı after FloodWait: {cfg['SESSION_NAME']}")
+
         except RPCError as e:
             print(f"❌ Pyrogram xəta: {e} - {cfg['SESSION_NAME']}")
+
         except Exception as e:
             print(f"❌ Digər xəta: {e} - {cfg['SESSION_NAME']}")
 
-        # Add a small delay between each bot to prevent rate limiting
-        await asyncio.sleep(2)  # Add delay between bot starts
+        # Add a small delay between bot starts to avoid hitting the rate limit
+        await asyncio.sleep(2)  # 2-second delay between each bot to reduce the risk of hitting rate limits
+# async def create_bots():
+#     log_dir = "log"
+#     if not os.path.exists(log_dir):
+#         os.makedirs(log_dir)
+        
+#     for cfg in config["BOTS"]:
+#         session_path = os.path.join(log_dir, cfg["SESSION_NAME"])
+#         bot = Client(
+#             session_path,
+#             api_id=cfg["API_ID"],
+#             api_hash=cfg["API_HASH"],
+#             bot_token=cfg["BOT_TOKEN"]
+#         )
+#         try:
+#             await bot.start()  # Try to start the bot
+#             bots.append(bot)
+#             print(f"✅ Bot başladı: {cfg['SESSION_NAME']}")
+#         except FloodWait as e:
+#             wait_time = e.value
+#             print(f"❌ FloodWait ({wait_time} saniyə) - {cfg['SESSION_NAME']}")
+#             time.sleep(wait_time)  # Wait for the specified time
+#             await bot.start()  # Retry after the wait time
+#             bots.append(bot)
+#             print(f"✅ Bot başladı after FloodWait: {cfg['SESSION_NAME']}")
+#         except RPCError as e:
+#             print(f"❌ Pyrogram xəta: {e} - {cfg['SESSION_NAME']}")
+#         except Exception as e:
+#             print(f"❌ Digər xəta: {e} - {cfg['SESSION_NAME']}")
+
+#         # Add a small delay between each bot to prevent rate limiting
+#         await asyncio.sleep(2)  # Add delay between bot starts
 
 # Botların yaradılması tamamlandıqdan sonra botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)        
