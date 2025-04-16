@@ -97,7 +97,7 @@ chat_running = False
 
 # Botların yaradılması və konfiqurasiyası
 # (Telegram API ID, API Hash, Bot Token)
-def create_bots():
+async def create_bots():
     log_dir = "log"
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
