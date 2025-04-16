@@ -113,31 +113,29 @@ async def create_bots():
             api_hash=cfg["API_HASH"],
             bot_token=cfg["BOT_TOKEN"]
         )
+        
+        try:
+            await bot.start()  # Try to start the bot
+            bots.append(bot)
+            print(f"✅ Bot başladı: {cfg['SESSION_NAME']}")
 
-        # Try to start the bot and handle FloodWait if needed
-        while True:
-            try:
-                await bot.start()  # Try to start the bot
-                bots.append(bot)
-                print(f"✅ Bot başladı: {cfg['SESSION_NAME']}")
-                break  # Break the loop if bot starts successfully
+        except FloodWait as e:
+            wait_time = e.value
+            print(f"❌ FloodWait ({wait_time} saniyə) - {cfg['SESSION_NAME']}")
+            # Wait for the specified time before retrying
+            await asyncio.sleep(wait_time)
+            await bot.start()  # Retry after waiting
+            bots.append(bot)
+            print(f"✅ Bot başladı after FloodWait: {cfg['SESSION_NAME']}")
 
-            except FloodWait as e:
-                wait_time = e.value
-                print(f"❌ FloodWait ({wait_time} saniyə) - {cfg['SESSION_NAME']}")
-                await asyncio.sleep(wait_time)  # Wait for the required time before retrying
-                print(f"Retrying to start {cfg['SESSION_NAME']} after waiting for {wait_time} seconds...")
+        except RPCError as e:
+            print(f"❌ Pyrogram xəta: {e} - {cfg['SESSION_NAME']}")
 
-            except RPCError as e:
-                print(f"❌ Pyrogram xəta: {e} - {cfg['SESSION_NAME']}")
-                break  # Break on RPC error
+        except Exception as e:
+            print(f"❌ Digər xəta: {e} - {cfg['SESSION_NAME']}")
 
-            except Exception as e:
-                print(f"❌ Digər xəta: {e} - {cfg['SESSION_NAME']}")
-                break  # Break for any other exceptions
-
-        # Small delay to avoid hitting Telegram rate limits
-        await asyncio.sleep(2)  # 2-second delay between each bot start
+        # Add a small delay between bot starts to avoid hitting the rate limit
+        await asyncio.sleep(2)  # 2-second delay between each bot to reduce the risk of hitting rate limits
 # async def create_bots():
 #     log_dir = "log"
 #     if not os.path.exists(log_dir):
