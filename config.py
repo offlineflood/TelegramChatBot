@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 config = {
-    "OWNER_ID": 5570119623,
+    "OWNER_ID": 1280040987,
     "BOTS": [
         {
             "SESSION_NAME": "OneTelegramBot",
