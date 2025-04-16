@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pyrogram.errors import FloodWait, RPCError
 from pyrogram.enums import ChatAction
 from pyrogram import Client, filters
 from pyrogram.types import Message
@@ -109,8 +110,16 @@ def create_bots():
             api_hash=cfg["API_HASH"],
             bot_token=cfg["BOT_TOKEN"]
         )
-        bots.append(bot)
-        print(f"Bot yaradıldı: {cfg['SESSION_NAME']}")
+        try:
+            await bot.start()
+            bots.append(bot)
+            print(f"✅ Bot başladı: {cfg['SESSION_NAME']}")
+        except FloodWait as e:
+            print(f"❌ FloodWait ({e.value} saniyə) - {cfg['SESSION_NAME']}")
+        except RPCError as e:
+            print(f"❌ Pyrogram xəta: {e} - {cfg['SESSION_NAME']}")
+        except Exception as e:
+            print(f"❌ Digər xəta: {e} - {cfg['SESSION_NAME']}")
 
 # Botların yaradılması tamamlandıqdan sonra botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)        
@@ -225,9 +234,13 @@ async def media_loop():
 # (Telegram API ID, API Hash, Bot Token)
 async def main():
     create_bots()
+    if not bots:
+        print("❌ Heç bir bot işə başlamadı. Çıxılır.")
+        return  # Don't crash, just exit
+        
     register_handlers()
 
-    await asyncio.gather(*(bot.start() for bot in bots))
+    # await asyncio.gather(*(bot.start() for bot in bots))
     print("Botlar işə düşdü!")
     await asyncio.sleep(5)
 
