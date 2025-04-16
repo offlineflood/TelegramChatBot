@@ -111,7 +111,7 @@ def create_bots():
             bot_token=cfg["BOT_TOKEN"]
         )
         try:
-            await bot.start()
+            # await bot.start()
             bots.append(bot)
             print(f"✅ Bot başladı: {cfg['SESSION_NAME']}")
         except FloodWait as e:
