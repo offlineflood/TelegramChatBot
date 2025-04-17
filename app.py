@@ -5,6 +5,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from threading import Thread
 from config import config
+from flask import Flask
 import asyncio
 import random
 import time
@@ -132,9 +133,6 @@ async def create_bots():
 
         # Add a small delay between each bot to prevent rate limiting
         await asyncio.sleep(2)  # Add delay between bot starts
-
-# Flask serveri
-flask_app = Flask(__name__)
 
 # Botların yaradılması tamamlandıqdan sonra botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)        
