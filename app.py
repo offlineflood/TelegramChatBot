@@ -3,6 +3,7 @@ from pyrogram.errors import FloodWait, RPCError
 from pyrogram.enums import ChatAction
 from pyrogram import Client, filters
 from pyrogram.types import Message
+from threading import Thread
 from config import config
 import asyncio
 import random
@@ -132,6 +133,9 @@ async def create_bots():
         # Add a small delay between each bot to prevent rate limiting
         await asyncio.sleep(2)  # Add delay between bot starts
 
+# Flask serveri
+flask_app = Flask(__name__)
+
 # Botların yaradılması tamamlandıqdan sonra botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)        
 def register_handlers():
@@ -243,23 +247,54 @@ async def media_loop():
 
 # Botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)
-async def main():
-    await create_bots() # 🔧 async function-u await ilə çağır
+# async def main():
+#     await create_bots() # 🔧 async function-u await ilə çağır
     
+#     if not bots:
+#         print("❌ Heç bir bot işə başlamadı. Çıxılır.")
+#         return  # Don't crash, just exit
+        
+#     register_handlers()
+
+#     await asyncio.gather(*(bot.start() for bot in bots))
+#     print("Botlar işə düşdü!")
+#     await asyncio.sleep(5)
+
+#     await asyncio.gather(
+#         conversation_loop(),
+#         media_loop()
+#     )
+
+# if __name__ == "__main__":
+#     asyncio.run(main())
+# Flask server
+flask_app = Flask(__name__)
+
+@flask_app.route("/")
+def index():
+    print("🌐 Flask serverinə HTTP sorğusu göndərildi.")
+    return "Telegram Bot işləyir! 👌"
+
+def run_flask():
+    print("🚀 Flask server işə salınır...")
+    flask_app.run(host="0.0.0.0", port=8000)
+
+# Main bot run with flask
+def run_pyrogram():
+    asyncio.run(main())
+
+async def main():
+    await create_bots()
     if not bots:
         print("❌ Heç bir bot işə başlamadı. Çıxılır.")
-        return  # Don't crash, just exit
-        
+        return
     register_handlers()
-
-    # await asyncio.gather(*(bot.start() for bot in bots))
-    print("Botlar işə düşdü!")
-    await asyncio.sleep(5)
-
     await asyncio.gather(
         conversation_loop(),
         media_loop()
     )
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    Thread(target=run_flask).start()
+    print("⚙️ Flask server fon rejimində işə salındı.")
+    run_pyrogram()
