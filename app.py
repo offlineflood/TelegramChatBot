@@ -99,13 +99,12 @@ chat_running = False
 
 # Botların yaradılması və konfiqurasiyası
 # (Telegram API ID, API Hash, Bot Token)
-# Botların yaradılması və konfiqurasiyası
-async def create_bots():
+# Botların yaradılması və konfiqurasiyası      
     log_dir = "log"
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-
-    for idx, cfg in enumerate(config["BOTS"]):
+        
+    for cfg in config["BOTS"]:
         session_path = os.path.join(log_dir, cfg["SESSION_NAME"])
         bot = Client(
             session_path,
@@ -113,37 +112,24 @@ async def create_bots():
             api_hash=cfg["API_HASH"],
             bot_token=cfg["BOT_TOKEN"]
         )
-       
-#     log_dir = "log"
-#     if not os.path.exists(log_dir):
-#         os.makedirs(log_dir)
-        
-#     for cfg in config["BOTS"]:
-#         session_path = os.path.join(log_dir, cfg["SESSION_NAME"])
-#         bot = Client(
-#             session_path,
-#             api_id=cfg["API_ID"],
-#             api_hash=cfg["API_HASH"],
-#             bot_token=cfg["BOT_TOKEN"]
-#         )
-#         try:
-#             await bot.start()  # Try to start the bot
-#             bots.append(bot)
-#             print(f"✅ Bot başladı: {cfg['SESSION_NAME']}")
-#         except FloodWait as e:
-#             wait_time = e.value
-#             print(f"❌ FloodWait ({wait_time} saniyə) - {cfg['SESSION_NAME']}")
-#             time.sleep(wait_time)  # Wait for the specified time
-#             await bot.start()  # Retry after the wait time
-#             bots.append(bot)
-#             print(f"✅ Bot başladı after FloodWait: {cfg['SESSION_NAME']}")
-#         except RPCError as e:
-#             print(f"❌ Pyrogram xəta: {e} - {cfg['SESSION_NAME']}")
-#         except Exception as e:
-#             print(f"❌ Digər xəta: {e} - {cfg['SESSION_NAME']}")
+        try:
+            await bot.start()  # Try to start the bot
+            bots.append(bot)
+            print(f"✅ Bot başladı: {cfg['SESSION_NAME']}")
+        except FloodWait as e:
+            wait_time = e.value
+            print(f"❌ FloodWait ({wait_time} saniyə) - {cfg['SESSION_NAME']}")
+            time.sleep(wait_time)  # Wait for the specified time
+            await bot.start()  # Retry after the wait time
+            bots.append(bot)
+            print(f"✅ Bot başladı after FloodWait: {cfg['SESSION_NAME']}")
+        except RPCError as e:
+            print(f"❌ Pyrogram xəta: {e} - {cfg['SESSION_NAME']}")
+        except Exception as e:
+            print(f"❌ Digər xəta: {e} - {cfg['SESSION_NAME']}")
 
-#         # Add a small delay between each bot to prevent rate limiting
-#         await asyncio.sleep(2)  # Add delay between bot starts
+        # Add a small delay between each bot to prevent rate limiting
+        await asyncio.sleep(2)  # Add delay between bot starts
 
 # Botların yaradılması tamamlandıqdan sonra botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)        
@@ -256,38 +242,23 @@ async def media_loop():
 
 # Botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 # (Telegram API ID, API Hash, Bot Token)
-# Botların işə düşməsi üçün lazım olan konfiqurasiyaları qeyd edin
 async def main():
-    await create_bots()  # Create and start bots with FloodWait handling
-
+    await create_bots() # 🔧 async function-u await ilə çağır
+    
     if not bots:
         print("❌ Heç bir bot işə başlamadı. Çıxılır.")
-        return  # Exit if no bot was started
-    
+        return  # Don't crash, just exit
+        
+    register_handlers()
+
+    # await asyncio.gather(*(bot.start() for bot in bots))
     print("Botlar işə düşdü!")
-    await asyncio.sleep(5)  # Ensure the bots are fully started before proceeding
-    
-    # Additional bot logic (e.g., conversation_loop, media_loop) here...
+    await asyncio.sleep(5)
+
+    await asyncio.gather(
+        conversation_loop(),
+        media_loop()
+    )
 
 if __name__ == "__main__":
     asyncio.run(main())
-# async def main():
-#     await create_bots() # 🔧 async function-u await ilə çağır
-    
-#     if not bots:
-#         print("❌ Heç bir bot işə başlamadı. Çıxılır.")
-#         return  # Don't crash, just exit
-        
-#     register_handlers()
-
-#     # await asyncio.gather(*(bot.start() for bot in bots))
-#     print("Botlar işə düşdü!")
-#     await asyncio.sleep(5)
-
-#     await asyncio.gather(
-#         conversation_loop(),
-#         media_loop()
-#     )
-
-# if __name__ == "__main__":
-#     asyncio.run(main())
